@@ -1,6 +1,6 @@
-from bottle import Bottle, run, static_file, template
-import json
-from services.generator_map import generate_heatmap
+from bottle import Bottle, run, static_file, HTTPError
+import importlib
+import os
 
 app = Bottle()
 
@@ -9,23 +9,27 @@ app = Bottle()
 def serve_static(filepath):
     return static_file(filepath, root='static/')
 
-# Route for home page
+# Dynamic controller/action routing
 @app.route('/')
-def index():
-    return template('views/index.tpl')
-
-# Route to display the heatmap
-@app.route('/heatmap')
-def heatmap():
-    # Load activity data
-    with open('data/strava_activities.json', 'r') as f:
-        activities = json.load(f)
-    
-    # Generate heatmap
-    heatmap_html = generate_heatmap(activities)
-    
-    # Return the HTML to display in a template
-    return template('views/heatmap.tpl', map=heatmap_html)
+@app.route('/<controller>')
+@app.route('/<controller>/')
+@app.route('/<controller>/<action>')
+def dynamic_route(controller='home', action='index'):
+    try:
+        # Import the controller module
+        module_name = f"controllers.{controller}_controller"
+        controller_module = importlib.import_module(module_name)
+        
+        # Get the controller class
+        controller_class = getattr(controller_module, f"{controller.capitalize()}Controller")
+        controller_instance = controller_class()
+        
+        # Get and call the action method
+        action_method = getattr(controller_instance, action)
+        return action_method()
+        
+    except (ImportError, AttributeError) as e:
+        raise HTTPError(404, f"Page not found: {controller}/{action}")
 
 # Start the app
 if __name__ == "__main__":
