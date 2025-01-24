@@ -15,10 +15,10 @@ def error404(error):
     return template('views/404.tpl', message=error.body)
 
 # Dynamic controller/action routing
-@app.route('/')
-@app.route('/<controller>')
-@app.route('/<controller>/')
-@app.route('/<controller>/<action>')
+@app.route('/', method=['GET', 'POST'])
+@app.route('/<controller>', method=['GET', 'POST'])
+@app.route('/<controller>/', method=['GET', 'POST'])
+@app.route('/<controller>/<action>', method=['GET', 'POST'])
 def dynamic_route(controller='home', action='index'):
     try:
         # Import the controller module
