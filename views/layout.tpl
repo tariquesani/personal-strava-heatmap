@@ -23,6 +23,9 @@
                     <li class="nav-item">
                         <a class="nav-link py-2 my-0" href="/heatmap">Heatmap</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link py-2 my-0" href="/sync">Sync</a>
+                    </li>                    
                 </ul>
             </div>
         </div>
