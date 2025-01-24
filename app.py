@@ -1,4 +1,4 @@
-from bottle import Bottle, run, static_file, HTTPError
+from bottle import Bottle, run, static_file, HTTPError, error, template
 import importlib
 import os
 
@@ -8,6 +8,11 @@ app = Bottle()
 @app.route('/static/<filepath:path>')
 def serve_static(filepath):
     return static_file(filepath, root='static/')
+
+# Custom error handler for 404
+@app.error(404)
+def error404(error):
+    return template('views/404.tpl', message=error.body)
 
 # Dynamic controller/action routing
 @app.route('/')
