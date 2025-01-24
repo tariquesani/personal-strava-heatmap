@@ -12,7 +12,7 @@ def serve_static(filepath):
 # Route for home page
 @app.route('/')
 def index():
-    return template('views/index')
+    return template('views/index.tpl')
 
 # Route to display the heatmap
 @app.route('/heatmap')
@@ -25,7 +25,7 @@ def heatmap():
     heatmap_html = generate_heatmap(activities)
     
     # Return the HTML to display in a template
-    return template('views/heatmap', map=heatmap_html)
+    return template('views/heatmap.tpl', map=heatmap_html)
 
 # Start the app
 if __name__ == "__main__":

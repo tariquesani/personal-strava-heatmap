@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Run Heatmap</title>
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-</head>
-<body>
-    <h1>Run Heatmap</h1>
-    <p>Welcome to your running heatmap! Use the link below to view your activity heatmap.</p>
+% rebase('layout.tpl', title='Home Page')
+<main class="container mt-4 pt-3">
+<div>
+    <p>Welcome to your personal heatmap project! View your workout activity heatmaps and track your routes.</p>
     <a href="/heatmap">View Heatmap</a>
-</body>
-</html>
+</div>
+</main>

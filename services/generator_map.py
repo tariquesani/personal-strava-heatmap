@@ -2,31 +2,36 @@ import folium
 import polyline
 from folium import plugins
 
+
 def generate_heatmap(activities):
     """
-    Generates a heatmap based on activity data using polyline data.
-
-    :param activities: List of activities containing map polyline data.
-    :return: HTML string of the heatmap.
+    Generates a heatmap visualization from activity GPS data.
+    
+    Args:
+        activities: List of activity dictionaries containing map polyline data
+        
+    Returns:
+        str: HTML representation of the heatmap, or error message if no activities
     """
     if not activities:
         return "No activities found."
 
-    # Initialize map centered on the first activity
-    first_activity = activities[0]
-    map_center = [first_activity['start_lat'], first_activity['start_lng']]
-    heatmap_map = folium.Map(location=map_center, zoom_start=16)
+    # Center map on first activity's starting point
+    map_center = [activities[0]['start_lat'], activities[0]['start_lng']]
+    heatmap = folium.Map(location=map_center, zoom_start=15)
+    
+    # Add fullscreen control
+    plugins.Fullscreen(position="topright", force_separate_button=True).add_to(heatmap)
 
-    # Extract coordinates from polylines
-    heatmap_points = []
-    for activity in activities:
-        if activity.get("map"):
-            decoded_points = polyline.decode(activity["map"])
-            heatmap_points.extend(decoded_points)
+    # Collect all GPS points from activity polylines
+    points = [
+        point 
+        for activity in activities 
+        if activity.get("map")
+        for point in polyline.decode(activity["map"])
+    ]
 
-    # Add heatmap layer if points exist
-    if heatmap_points:
-        plugins.HeatMap(heatmap_points).add_to(heatmap_map)
+    if points:
+        plugins.HeatMap(points, radius=6, blur=2, scaleRadius=True).add_to(heatmap)
 
-    # Return map as HTML
-    return heatmap_map._repr_html_()
+    return heatmap._repr_html_()
