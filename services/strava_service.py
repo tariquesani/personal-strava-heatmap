@@ -68,3 +68,28 @@ class StravaService:
             "map": activity.map.summary_polyline if hasattr(activity, 'map') else None
         } for activity in client.get_activities(after=start_date, before=end_date)
         if hasattr(activity, 'map') and activity.map.summary_polyline] 
+
+    def get_activity_date_range(self):
+        """Get the date range of stored activities.
+        
+        Returns:
+            tuple: (start_date, end_date) as ISO format strings, or (None, None) if no activities
+        """
+        try:
+            with open('data/strava_activities.json', 'r') as f:
+                activities = json.load(f)
+                
+            if not activities:
+                return None, None
+                
+            # Sort activities by start_date
+            sorted_activities = sorted(activities, key=lambda x: x['start_date'])
+            
+            # Get earliest and latest dates
+            start_date = sorted_activities[0]['start_date'].split('T')[0]  # Get just the date part
+            end_date = sorted_activities[-1]['start_date'].split('T')[0]
+            
+            return start_date, end_date
+            
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None, None 
