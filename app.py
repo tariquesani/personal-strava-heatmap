@@ -1,6 +1,8 @@
 from bottle import Bottle, run, static_file, HTTPError, error, template
 import importlib
 import os
+import traceback
+import sys
 
 app = Bottle()
 
@@ -33,7 +35,13 @@ def dynamic_route(controller='home', action='index'):
         action_method = getattr(controller_instance, action)
         return action_method()
         
-    except (ImportError, AttributeError) as e:
+    except Exception as e:
+        # Log the full error traceback to stderr
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        error_details = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        print("Error Details:", error_details, file=sys.stderr)
+        
+        # Always return a 404 error to the user
         raise HTTPError(404, f"Page not found: {controller}/{action}")
 
 # Start the app
