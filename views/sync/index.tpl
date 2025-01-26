@@ -8,7 +8,8 @@
             <div class="alert alert-info mb-4">
                 <p class="mb-0">
                     <strong>Existing activities:</strong><br>
-                    From: {{start_date}} to {{end_date}}
+                    % from datetime import datetime
+                    From: {{datetime.strptime(start_date, "%Y-%m-%d").strftime("%d-%b-%Y")}} to {{datetime.strptime(end_date, "%Y-%m-%d").strftime("%d-%b-%Y")}}
                 </p>
             </div>
             % end
@@ -17,7 +18,7 @@
                 <div class="mb-3">
                     <label for="start_date" class="form-label">Start Date:</label>
                     <input type="date" class="form-control" id="start_date" name="start_date" 
-                           required placeholder="01-Jan-2025"
+                           required placeholder="01-Jan-2024"
                            value="{{start_date if start_date else ''}}">
                 </div>
                 

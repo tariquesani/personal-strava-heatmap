@@ -41,7 +41,7 @@ def generate_heatmap(activities):
         plugins.HeatMap(points, radius=6, blur=2, scaleRadius=True).add_to(heatmap)
 
     # Format dates
-    date_format = '%b %d, %Y'
+    date_format = '%d-%b-%Y'
     start_str = start_date.strftime(date_format)
     end_str = end_date.strftime(date_format)
 
