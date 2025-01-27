@@ -97,3 +97,13 @@ class SyncController:
             
         except Exception as e:
             return template('views/sync/error.tpl', error=str(e)) 
+        
+    def athlete(self):
+        # Ensure we have valid authentication
+        if not self.strava_service.get_valid_access_token(self.client):
+            return redirect('/sync/authorize')
+        
+        athlete = self.strava_service.fetch_athlete(self.client)
+        return template('views/athlete.tpl', athlete=athlete)
+                
+

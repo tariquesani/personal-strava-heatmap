@@ -93,3 +93,39 @@ class StravaService:
             
         except (FileNotFoundError, json.JSONDecodeError):
             return None, None 
+        
+    def fetch_athlete(self, client):
+        try:
+            # Ensure data directory exists
+            os.makedirs('data', exist_ok=True)
+            
+            # Fetch athlete data
+            athlete = client.get_athlete()
+            # Format athlete data
+            athlete_data = {
+                "id": athlete.id,
+                "username": athlete.username,
+                "firstname": athlete.firstname,
+                "lastname": athlete.lastname,
+                "city": athlete.city,
+                "state": athlete.state,
+                "country": athlete.country,
+                "sex": athlete.sex,
+                "profile": athlete.profile,
+                "profile_medium": athlete.profile_medium,
+                "measurement_preference": athlete.measurement_preference,
+                "created_at": athlete.created_at.isoformat() if athlete.created_at else None,
+                "updated_at": athlete.updated_at.isoformat() if athlete.updated_at else None,
+                "ftp": athlete.ftp,
+                "weight": athlete.weight
+            }
+            
+            # Write to file
+            with open('data/strava_athlete.json', 'w') as f:
+                json.dump(athlete_data, f, indent=2)
+                
+            return athlete_data
+            
+        except Exception as e:
+            print(f"Error fetching athlete data: {str(e)}")
+            return None
