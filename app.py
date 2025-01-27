@@ -1,10 +1,23 @@
-from bottle import Bottle, run, static_file, HTTPError, error, template
+from bottle import Bottle, run, static_file, HTTPError, error, template, BaseTemplate
 import importlib
 import os
 import traceback
 import sys
+import json
 
 app = Bottle()
+
+# Load Athlete JSON data once at app startup
+try:
+    with open('data/strava_athlete.json', 'r') as f:
+        athlete = json.load(f)
+except FileNotFoundError:
+    athlete = {"error": "JSON file not found"}
+except json.JSONDecodeError:
+    athlete = {"error": "Invalid JSON format"}
+
+# Set the default template variables
+BaseTemplate.defaults = {'athlete': athlete}
 
 # Routes for static files (CSS, JS, images)
 @app.route('/static/<filepath:path>')

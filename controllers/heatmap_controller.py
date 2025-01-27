@@ -4,9 +4,12 @@ from services.generator_map import generate_heatmap
 
 class HeatmapController:
     def index(self):
-        # Load activity data
-        with open('data/strava_activities.json', 'r') as f:
-            activities = json.load(f)
+        # Load activities from file
+        try:
+            with open('data/strava_activities.json', 'r') as f:
+                activities = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            activities = []
         
         # Generate heatmap
         heatmap_html = generate_heatmap(activities)

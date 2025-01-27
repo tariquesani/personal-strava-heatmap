@@ -1,13 +1,7 @@
-<%
-# Load the JSON data directly in the template
-import json
-with open('data/strava_athlete.json', 'r') as f:
-    athlete = json.load(f)
-%>
 <!DOCTYPE html>
 <html class="h-100">
 <head>
-    <title>{{get('title', ' ')}} - Tarique's Running Heatmap</title>
+    <title>{{get('title', ' ')}} - {{athlete.get('firstname', 'Athlete')}}'s Running Heatmap</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
@@ -41,7 +35,7 @@ with open('data/strava_athlete.json', 'r') as f:
                         </ul>
                     </li>                    
                 </ul>
-                <a class="navbar-brand py-2 my-0" href="/">{{athlete['firstname']}}'s Running Heatmap</a>
+                <a class="navbar-brand py-2 my-0" href="/">{{athlete.get('firstname', 'Athlete')}}'s Running Heatmap</a>
             </div>
         </div>
     </nav>
