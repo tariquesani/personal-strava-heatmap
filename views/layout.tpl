@@ -35,7 +35,10 @@
                         </ul>
                     </li>                    
                 </ul>
-                <a class="navbar-brand py-2 my-0" href="/">{{athlete.get('firstname', 'Athlete')}}'s Running Heatmap</a>
+                <a class="navbar-brand py-2 my-0" href="/">
+                    <img src="{{athlete.get('profile', '')}}" alt="Athlete Profile" class="rounded-circle" width="25" height="25">
+                    {{athlete.get('firstname', 'Athlete')}}'s Running Heatmap
+                </a>
             </div>
         </div>
     </nav>
