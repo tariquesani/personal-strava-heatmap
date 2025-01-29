@@ -49,7 +49,7 @@
     
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
-            <p class="text-muted mb-0">&copy; 2025 Strava Heatmap Project</p>
+            <p class="text-muted mb-0">&copy; 2025 Personal Strava Heatmap Project</p>
         </div>
     </footer>
 

@@ -8,7 +8,7 @@
                     <div class="card mb-4">
                         <div class="card-body text-center">
                             <h3 class="card-title">Athlete Profile</h3>
-                            <img src="{{ athlete['profile'] }}" alt="Profile Image" class="img-fluid rounded-circle mb-3">
+                            <img src="{{ athlete['profile'] }}" alt="Profile Image" class="img-fluid rounded-circle mb-3" width="120">
                             <p class="mb-2"><strong>Name:</strong> {{ athlete['firstname'] }} {{ athlete['lastname'] }}</p>
                             <p class="mb-2"><strong>Username:</strong> {{ athlete['username'] }}</p>
                             <p class="mb-2"><strong>City:</strong> {{ athlete['city'] }}</p>
