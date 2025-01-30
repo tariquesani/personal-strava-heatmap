@@ -4,6 +4,23 @@ from folium import plugins
 from datetime import datetime
 from collections import defaultdict
 
+# Global legend HTML template
+LEGEND_HTML_TEMPLATE = '''
+<div style="
+    position: fixed; 
+    top: 10px; 
+    left: 50px; 
+    width: 250px;
+    z-index: 9999;
+    background-color: white;
+    padding: 10px;
+    border: 2px solid lightgrey;
+    border-radius: 6px;
+    ">
+    <p style="margin-bottom: 0;"><strong>Activities:</strong> {activity_count}<br>
+    <strong>Date: </strong>{start_date} to {end_date}</p>
+</div>
+'''
 
 def generate_heatmap(activities):
     """
@@ -77,35 +94,17 @@ def generate_heatmap(activities):
     # Add layer control after all layers are added
     folium.LayerControl(position='topright').add_to(heatmap)
     
-
-    # Format dates
-    date_format = '%d-%b-%Y'
-    start_str = start_date.strftime(date_format)
-    end_str = end_date.strftime(date_format)
-
     # Create the legend HTML with higher z-index
-    legend_html = f'''
-    <div style="
-        position: fixed; 
-        top: 10px; 
-        left: 50px; 
-        width: 250px;
-        z-index: 9999;
-        background-color: white;
-        padding: 10px;
-        border: 2px solid lightgrey;
-        border-radius: 6px;
-        ">
-        <p style="margin-bottom: 0;"><strong>Activities:</strong> {len(activities)}<br>
-        <strong>Date: </strong>{start_str} to {end_str}</p>
-    </div>
-    '''
+    legend_html = LEGEND_HTML_TEMPLATE.format(
+        activity_count=len(activities),
+        start_date=start_date.strftime('%d-%b-%Y'),
+        end_date=end_date.strftime('%d-%b-%Y')
+    )
 
     # Add the legend to the map
     heatmap.get_root().html.add_child(folium.Element(legend_html))
 
     return heatmap._repr_html_()
-
 
 def generate_heatmap_with_time(activities):
     # Sort activities by date
@@ -175,28 +174,12 @@ def generate_heatmap_with_time(activities):
     )
     heatmap_layer.add_to(heatmap)
 
-    # Format dates
-    date_format = '%d-%b-%Y'
-    start_str = start_date.strftime(date_format)
-    end_str = end_date.strftime(date_format)
-
     # Create the legend HTML with higher z-index
-    legend_html = f'''
-    <div style="
-        position: fixed; 
-        top: 10px; 
-        left: 50px; 
-        width: 250px;
-        z-index: 9999;
-        background-color: white;
-        padding: 10px;
-        border: 2px solid lightgrey;
-        border-radius: 6px;
-        ">
-        <p style="margin-bottom: 0;"><strong>Activities:</strong> {len(activities)}<br>
-        <strong>Date: </strong>{start_str} to {end_str}</p>
-    </div>
-    '''
+    legend_html = LEGEND_HTML_TEMPLATE.format(
+        activity_count=len(activities),
+        start_date=start_date.strftime('%d-%b-%Y'),
+        end_date=end_date.strftime('%d-%b-%Y')
+    )
 
     # Add the legend to the map
     heatmap.get_root().html.add_child(folium.Element(legend_html))

@@ -21,9 +21,15 @@
                     <li class="nav-item">
                         <a class="nav-link py-2 my-0" href="/"><i class="bi bi-house"></i> </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link py-2 my-0" href="/heatmap"><i class="bi bi-map"></i> Heatmap</a>
-                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle py-2 my-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-map"></i> Heatmap
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/heatmap">Static</a></li>
+                            <li><a class="dropdown-item" href="/heatmap/time">Timelapse</a></li>
+                        </ul>
+                    </li>                    
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle py-2 my-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-arrow-repeat"></i> Sync
