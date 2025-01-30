@@ -8,7 +8,7 @@ A lightweight web app that visualizes your running or cycling activities from St
 - Built with Bottle and Folium for simplicity and flexibility.
 - Automatically updates with data fetched from Strava's API.
 - Modular structure for easy future enhancements.
-- Minimal setup, accessible via a local web server.
+- Minimal setup, accessible in browser via a local web server.
 
 ## Getting Started
 ### Prerequisites
