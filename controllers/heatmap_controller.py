@@ -1,6 +1,6 @@
 from bottle import template
 import json
-from services.generator_map import generate_heatmap, generate_heatmap_with_time
+from services.map_service import generate_heatmap, generate_heatmap_with_time
 
 class HeatmapController:
     def index(self):
