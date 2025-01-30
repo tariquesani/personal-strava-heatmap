@@ -2,6 +2,7 @@ import folium
 import polyline
 from folium import plugins
 from datetime import datetime
+from collections import defaultdict
 
 
 def generate_heatmap(activities):
@@ -102,5 +103,105 @@ def generate_heatmap(activities):
 
     # Add the legend to the map
     heatmap.get_root().html.add_child(folium.Element(legend_html))
+
+    return heatmap._repr_html_()
+
+
+def generate_heatmap_with_time(activities):
+    # Sort activities by date
+    activities.sort(key=lambda x: x["start_date"])
+
+    # Create a dictionary to store points and their frequencies at each timestep
+    point_freq = defaultdict(lambda: [0] * len(activities))
+    time_labels = []
+    start_date = datetime.strptime(activities[0]['start_date'][:10], '%Y-%m-%d')
+    end_date = start_date
+
+    # Process each activity
+    for timestep, activity in enumerate(activities):
+        if "map" in activity and activity["map"]:
+            points = polyline.decode(activity["map"])
+            activity_date = datetime.strptime(activity['start_date'][:10], '%Y-%m-%d')
+            start_date = min(start_date, activity_date)
+            end_date = max(end_date, activity_date)
+
+            # For each point in this activity
+            for lat, lng in points:
+                # Round coordinates to reduce unique points
+                point_key = (round(lat, 5), round(lng, 5))
+
+                # Increment the weight for this point for this timestep and all future timesteps
+                for t in range(timestep, len(activities)):
+                    point_freq[point_key][t] += 1
+
+            # Add timestamp label
+            start_time = datetime.fromisoformat(activity["start_date"].replace("Z", "+00:00"))
+            time_labels.append(start_time.strftime("%Y-%m-%d %H:%M"))
+
+    # Convert to format needed for HeatMapWithTime
+    heatmap_data = []
+    all_points = list(point_freq.keys())
+
+    # For each timestep, create a list of [lat, lng, weight] entries
+    for t in range(len(activities)):
+        timestep_data = [
+            [lat, lng, point_freq[(lat, lng)][t]]
+            for lat, lng in all_points
+            if point_freq[(lat, lng)][t] > 0
+        ]
+        heatmap_data.append(timestep_data)
+
+    # Calculate map center correctly
+    avg_lat = sum(lat for lat, _ in all_points) / len(all_points)
+    avg_lng = sum(lng for _, lng in all_points) / len(all_points)
+
+    # Create the base map with only OpenStreetMap layer
+    heatmap = folium.Map(
+        location=[avg_lat, avg_lng],
+        zoom_start=15,
+        control_scale=True
+    )
+
+    # Add the heatmap directly to the map
+    heatmap_layer = plugins.HeatMapWithTime(
+        heatmap_data,
+        index=time_labels,
+        auto_play=True,
+        position='topleft',
+        max_opacity=0.8,
+        min_opacity=0.3,
+        radius=3,
+        name='Heatmap'  # This makes it show up in layer control
+    )
+    heatmap_layer.add_to(heatmap)
+
+    # Format dates
+    date_format = '%d-%b-%Y'
+    start_str = start_date.strftime(date_format)
+    end_str = end_date.strftime(date_format)
+
+    # Create the legend HTML with higher z-index
+    legend_html = f'''
+    <div style="
+        position: fixed; 
+        top: 10px; 
+        left: 50px; 
+        width: 250px;
+        z-index: 9999;
+        background-color: white;
+        padding: 10px;
+        border: 2px solid lightgrey;
+        border-radius: 6px;
+        ">
+        <p style="margin-bottom: 0;"><strong>Activities:</strong> {len(activities)}<br>
+        <strong>Date: </strong>{start_str} to {end_str}</p>
+    </div>
+    '''
+
+    # Add the legend to the map
+    heatmap.get_root().html.add_child(folium.Element(legend_html))
+
+    # Add layer control
+    folium.LayerControl().add_to(heatmap)
 
     return heatmap._repr_html_()
