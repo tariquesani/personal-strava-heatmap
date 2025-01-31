@@ -1,4 +1,4 @@
-# Personal Strava Running Heatmap
+# Personal Strava Heatmap
 
 ## Summary
 A lightweight web app that visualizes your running or cycling activities from Strava as an interactive heatmap, helping you track your workout routes effortlessly. Strava removed this feature for free users. 
@@ -53,7 +53,7 @@ A lightweight web app that visualizes your running or cycling activities from St
     ```
 
 ### Syncing Activities
-- Navigate to the Sync page and follow the instructions to sync your Strava activities.
+- Navigate to the Sync page and follow the instructions to sync your Strava activities. 
 
 ### Viewing the Heatmap
 - After syncing your activities, navigate to the Heatmap page to view your running heatmap.
