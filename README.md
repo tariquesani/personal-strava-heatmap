@@ -58,5 +58,8 @@ A lightweight web app that visualizes your running or cycling activities from St
 ### Viewing the Heatmap
 - After syncing your activities, navigate to the Heatmap page to view your running heatmap.
 
+## Screenshot
+![Screenshot](static/screenshot.png)
+
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
