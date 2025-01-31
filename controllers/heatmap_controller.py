@@ -4,48 +4,31 @@ from services.map_service import generate_heatmap, generate_heatmap_with_time, g
 from bottle import redirect
 
 class HeatmapController:
-    def index(self):
-        # Load activities from file
+    def load_activities(self):
         try:
             with open('data/strava_activities.json', 'r') as f:
-                activities = json.load(f)
+                return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            activities = []
             redirect('/sync')
-                    
+            return []
+
+    def index(self):
+        activities = self.load_activities()
         # Generate heatmap
         heatmap_html = generate_heatmap(activities)
-        
         # Return the HTML to display in a template
         return template('views/heatmap.tpl', map=heatmap_html)
 
-    
     def time(self):
-        # Load activities from file
-        try:
-            with open('data/strava_activities.json', 'r') as f:
-                activities = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            activities = []
-            redirect('/sync')
-        
+        activities = self.load_activities()
         # Generate heatmap
         heatmap_html = generate_heatmap_with_time(activities)
-        
         # Return the HTML to display in a template
         return template('views/heatmap.tpl', map=heatmap_html)
 
     def onetime(self):
-        # Load activities from file
-        try:
-            with open('data/strava_activities.json', 'r') as f:
-                activities = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            activities = []
-            redirect('/sync')
-        
+        activities = self.load_activities()
         # Generate heatmap
         heatmap_html = generate_heatmap_one_time(activities)
-        
         # Return the HTML to display in a template
         return template('views/heatmap.tpl', map=heatmap_html)
