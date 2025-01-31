@@ -63,3 +63,6 @@ A lightweight web app that visualizes your running or cycling activities from St
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
+This project is not affiliated with, endorsed by, or sponsored by Strava. All trademarks and copyrights belong to their respective owners.
