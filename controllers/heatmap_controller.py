@@ -9,7 +9,7 @@ class HeatmapController:
             with open('data/strava_activities.json', 'r') as f:
                 return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            redirect('/sync')
+            redirect('/sync') # Will this work reliably?
             return []
 
     def index(self):

@@ -22,31 +22,21 @@ LEGEND_HTML_TEMPLATE = '''
 </div>
 '''
 
-def generate_heatmap(activities):
-    """Generate a heatmap from activity GPS data."""
-
-    if not activities:
-        return "No activities found."
-
-    # Center map on first activity's starting point
-    map_center = [activities[0]['start_lat'], activities[0]['start_lng']]
-    
-    # Create the base map
-    heatmap = folium.Map(
-        location=map_center,
+def create_base_map(center):
+    """Create a base map centered at the given coordinates."""
+    base_map = folium.Map(
+        location=center,
         zoom_start=15,
         control_scale=True,
         tiles=None
     )
-    
     # Add tile layers
     folium.TileLayer(
         tiles='OpenStreetMap',
         name='Street',
         control=True,
         show=True
-    ).add_to(heatmap)
-    
+    ).add_to(base_map)
     folium.TileLayer(
         tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         attr='Esri',
@@ -54,9 +44,20 @@ def generate_heatmap(activities):
         control=True,
         overlay=False,
         show=False
-    ).add_to(heatmap)
-    
-    # Collect GPS points and track date range
+    ).add_to(base_map)
+    return base_map
+
+def add_legend(map_obj, activity_count, start_date, end_date):
+    """Add a legend to the map."""
+    legend_html = LEGEND_HTML_TEMPLATE.format(
+        activity_count=activity_count,
+        start_date=start_date.strftime('%d-%b-%Y'),
+        end_date=end_date.strftime('%d-%b-%Y')
+    )
+    map_obj.get_root().html.add_child(folium.Element(legend_html))
+
+def process_activities(activities):
+    """Process activities to extract points and date range."""
     points = []
     start_date = datetime.strptime(activities[0]['start_date'][:10], '%Y-%m-%d')
     end_date = start_date
@@ -67,8 +68,20 @@ def generate_heatmap(activities):
             activity_date = datetime.strptime(activity['start_date'][:10], '%Y-%m-%d')
             start_date = min(start_date, activity_date)
             end_date = max(end_date, activity_date)
+    
+    return points, start_date, end_date
 
-    # Add heatmap layer
+def generate_heatmap(activities):
+    """Generate a heatmap from activity GPS data."""
+    if not activities:
+        return "No activities found."
+
+    # Center map on first activity's starting point
+    map_center = [activities[0]['start_lat'], activities[0]['start_lng']]
+    heatmap = create_base_map(map_center)
+    points, start_date, end_date = process_activities(activities)
+
+    # Add heatmap layer if points exist
     if points:
         heatmap_layer = plugins.HeatMap(
             points,
@@ -80,32 +93,20 @@ def generate_heatmap(activities):
         )
         heatmap.add_child(heatmap_layer)
 
-    # Add fullscreen control
+    # Add fullscreen control and layer control
     plugins.Fullscreen(position="topright", force_separate_button=True).add_to(heatmap)
-
-    # Add layer control
     folium.LayerControl(position='topright').add_to(heatmap)
-    
-    # Create and add legend
-    legend_html = LEGEND_HTML_TEMPLATE.format(
-        activity_count=len(activities),
-        start_date=start_date.strftime('%d-%b-%Y'),
-        end_date=end_date.strftime('%d-%b-%Y')
-    )
-    heatmap.get_root().html.add_child(folium.Element(legend_html))
+    add_legend(heatmap, len(activities), start_date, end_date)
 
     return heatmap._repr_html_()
 
 def generate_heatmap_with_time(activities):
     """Generates a map visualization with a heatmap that changes over time."""
-
     if not activities:
         return "No activities found."
 
     # Sort activities by date
     activities.sort(key=lambda x: x["start_date"])
-
-    # Store points and their frequencies at each timestep
     point_freq = defaultdict(lambda: [0] * len(activities))
     time_labels = []
     start_date = datetime.strptime(activities[0]['start_date'][:10], '%Y-%m-%d')
@@ -119,7 +120,7 @@ def generate_heatmap_with_time(activities):
             start_date = min(start_date, activity_date)
             end_date = max(end_date, activity_date)
 
-            # For each point in this activity
+            # Update point frequencies
             for lat, lng in points:
                 point_key = (round(lat, 5), round(lng, 5))
                 for t in range(timestep, len(activities)):
@@ -129,11 +130,10 @@ def generate_heatmap_with_time(activities):
             start_time = datetime.fromisoformat(activity["start_date"].replace("Z", "+00:00"))
             time_labels.append(start_time.strftime("%Y-%m-%d %H:%M"))
 
-    # Convert to format needed for HeatMapWithTime
     heatmap_data = []
     all_points = list(point_freq.keys())
 
-    # For each timestep, create a list of [lat, lng, weight] entries
+    # Create heatmap data for each timestep
     for t in range(len(activities)):
         timestep_data = [
             [lat, lng, point_freq[(lat, lng)][t]]
@@ -145,15 +145,9 @@ def generate_heatmap_with_time(activities):
     # Calculate map center
     avg_lat = sum(lat for lat, _ in all_points) / len(all_points)
     avg_lng = sum(lng for _, lng in all_points) / len(all_points)
+    heatmap = create_base_map([avg_lat, avg_lng])
 
-    # Create the base map
-    heatmap = folium.Map(
-        location=[avg_lat, avg_lng],
-        zoom_start=15,
-        control_scale=True
-    )
-
-    # Add the heatmap
+    # Add the heatmap with time layer
     heatmap_layer = plugins.HeatMapWithTime(
         heatmap_data,
         index=time_labels,
@@ -166,42 +160,27 @@ def generate_heatmap_with_time(activities):
     )
     heatmap_layer.add_to(heatmap)
 
-    # Create and add legend
-    legend_html = LEGEND_HTML_TEMPLATE.format(
-        activity_count=len(activities),
-        start_date=start_date.strftime('%d-%b-%Y'),
-        end_date=end_date.strftime('%d-%b-%Y')
-    )
-    heatmap.get_root().html.add_child(folium.Element(legend_html))
-
-    # Add layer control
+    add_legend(heatmap, len(activities), start_date, end_date)
+    plugins.Fullscreen(position="topright", force_separate_button=True).add_to(heatmap)
     folium.LayerControl().add_to(heatmap)
 
     return heatmap._repr_html_()
 
 def generate_heatmap_one_ata_time(activities):
     """Generates a map visualization with routes for each activity, shown one at a time."""
-    
     if not activities:
         return "No activities found."
-    
+
     # Sort activities by date
     activities.sort(key=lambda x: x["start_date"])
-
-    # Store points and their frequencies at each timestep
     time_labels = []
     start_date = datetime.strptime(activities[0]['start_date'][:10], '%Y-%m-%d')
     end_date = start_date
-
-    # Find center point for the map
     map_center = [activities[0]['start_lat'], activities[0]['start_lng']]
-    
-    # Create base map
-    heatmap = folium.Map(location=map_center, zoom_start=16)
-    
-    # Process data
+    heatmap = create_base_map(map_center)
     heatmap_data = []
-    
+
+    # Process each activity
     for activity in activities:
         if "map" in activity and activity["map"]:
             points = polyline.decode(activity["map"])
@@ -211,7 +190,7 @@ def generate_heatmap_one_ata_time(activities):
             start_date = min(start_date, activity_date)
             end_date = max(end_date, activity_date)
             heatmap_data.append([[lat, lon] for lat, lon in points])
-    
+
     # Add HeatMapWithTime plugin to the map
     heatmap_layer = plugins.HeatMapWithTime(
         heatmap_data,
@@ -225,15 +204,8 @@ def generate_heatmap_one_ata_time(activities):
     )
     heatmap_layer.add_to(heatmap)
 
-    # Create and add legend
-    legend_html = LEGEND_HTML_TEMPLATE.format(
-        activity_count=len(activities),
-        start_date=start_date.strftime('%d-%b-%Y'),
-        end_date=end_date.strftime('%d-%b-%Y')
-    )
-    heatmap.get_root().html.add_child(folium.Element(legend_html))
-
-    # Add layer control
+    add_legend(heatmap, len(activities), start_date, end_date)
+    plugins.Fullscreen(position="topright", force_separate_button=True).add_to(heatmap)
     folium.LayerControl().add_to(heatmap)
 
     return heatmap._repr_html_()
