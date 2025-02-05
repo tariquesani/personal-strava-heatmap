@@ -9,6 +9,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="icon" type="image/icon" href="/static/favicon.ico">
 </head>
 <body class="d-flex flex-column h-100">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
