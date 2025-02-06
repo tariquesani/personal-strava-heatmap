@@ -26,7 +26,7 @@ class HeatmapController:
         # Return the HTML to display in a template
         return template('views/heatmap.tpl', map=heatmap_html)
 
-    def onetime(self):
+    def single(self):
         activities = self.load_activities()
         # Generate heatmap
         heatmap_html = generate_heatmap_one_ata_time(activities)

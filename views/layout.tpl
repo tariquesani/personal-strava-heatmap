@@ -29,7 +29,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/heatmap">Static</a></li>
                             <li><a class="dropdown-item" href="/heatmap/time">Timelapse</a></li>
-                            <li><a class="dropdown-item" href="/heatmap/onetime">One at a time</a></li>
+                            <li><a class="dropdown-item" href="/heatmap/single">One at a time</a></li>
                         </ul>
                     </li>                    
                     <li class="nav-item dropdown">

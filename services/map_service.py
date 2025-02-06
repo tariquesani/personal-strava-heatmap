@@ -93,6 +93,11 @@ def generate_heatmap(activities):
         )
         heatmap.add_child(heatmap_layer)
 
+    # Compute bounds from points
+    min_lat, max_lat = min(p[0] for p in points), max(p[0] for p in points)
+    min_lon, max_lon = min(p[1] for p in points), max(p[1] for p in points)
+    heatmap.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
+
     # Add fullscreen control and layer control
     plugins.Fullscreen(position="topright", force_separate_button=True).add_to(heatmap)
     folium.LayerControl(position='topright').add_to(heatmap)
