@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-link py-2 my-0" href="/"><i class="bi bi-house"></i> </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link py-2 my-0" href="/heatmap/routes"><i class="bi bi-repeat"></i> Routes</a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle py-2 my-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-map"></i> Heatmap

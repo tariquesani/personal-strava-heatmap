@@ -1,8 +1,11 @@
 import folium
 import polyline
+import json
+from bottle import template
 from folium import plugins
-from datetime import datetime
+from datetime import datetime, timezone
 from collections import defaultdict
+from services.polylinewithtime_plugin import PolylineWithTime
 
 # Global legend HTML template
 LEGEND_HTML_TEMPLATE = '''
@@ -214,3 +217,37 @@ def generate_heatmap_one_ata_time(activities):
     folium.LayerControl().add_to(heatmap)
 
     return heatmap._repr_html_()
+
+def generate_routes_map(activities):
+    """Generate an interactive map showing activities with polylines and timestamps."""
+    if not activities:
+        return "No activities found."
+    
+    start_date = datetime.strptime(activities[0]['start_date'][:10], '%Y-%m-%d')
+    end_date = start_date
+    map_center = [activities[0]['start_lat'], activities[0]['start_lng']]
+    routemap = create_base_map(map_center)
+    points, start_date, end_date = process_activities(activities)
+
+
+    polylines = []
+    available_times = []
+    for activity in activities:
+        decoded_points = polyline.decode(activity["map"])
+        # Parse datetime while ensuring it's timezone-aware
+        date = datetime.fromisoformat(activity["start_date"])
+        if date.tzinfo is None:  # If offset-naive, make it UTC
+            date = date.replace(tzinfo=timezone.utc)
+        formatted_date = date.strftime("%Y-%m-%d %H:%M")  # String for display
+        polylines.append({"coords": decoded_points, "time": formatted_date})
+        available_times.append(formatted_date)
+
+    polylines.sort(key=lambda x: x["time"])
+    available_times = sorted(set(available_times))
+
+    time_layer = PolylineWithTime(polylines, available_times)
+    routemap.add_child(time_layer)
+
+    add_legend(routemap, len(activities), start_date, end_date)
+
+    return routemap._repr_html_()

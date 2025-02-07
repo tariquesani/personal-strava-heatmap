@@ -1,6 +1,6 @@
 from bottle import template
 import json
-from services.map_service import generate_heatmap, generate_heatmap_with_time, generate_heatmap_one_ata_time
+from services.map_service import generate_heatmap, generate_heatmap_with_time, generate_heatmap_one_ata_time, generate_routes_map
 from bottle import redirect
 
 class HeatmapController:
@@ -32,3 +32,10 @@ class HeatmapController:
         heatmap_html = generate_heatmap_one_ata_time(activities)
         # Return the HTML to display in a template
         return template('views/heatmap.tpl', map=heatmap_html)
+    
+    def routes(self):
+        activities = self.load_activities()
+        # Generate heatmap
+        heatmap_html = generate_routes_map(activities)
+        # Return the HTML to display in a template
+        return template('views/heatmap.tpl', map=heatmap_html)        
