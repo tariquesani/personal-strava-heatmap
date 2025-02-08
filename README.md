@@ -9,6 +9,7 @@ A lightweight web app that visualizes your running or cycling activities from St
 - Automatically updates with data fetched from Strava's API.
 - Modular structure for easy future enhancements.
 - Minimal setup, accessible in browser via a local web server.
+- View individual routes on the "Routes" page.
 
 ## Getting Started
 ### Prerequisites
@@ -57,6 +58,9 @@ A lightweight web app that visualizes your running or cycling activities from St
 
 ### Viewing the Heatmap
 - After syncing your activities, navigate to the Heatmap page to view your running heatmap.
+
+### Viewing Individual Routes
+- Navigate to the Routes page to view individual routes.
 
 ## Screenshot
 ![Screenshot](static/screenshot.png)
